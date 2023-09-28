@@ -3,7 +3,7 @@
 all: build
 
 build: 
-	cmake -B build -S ./src -DTEE_TYPE=CVM # -DENABLE_PARALLEL=ON
+	cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -B build -S ./src -DTEE_TYPE=CVM # -DENABLE_PARALLEL=ON
 	cmake --build build
 
 BUILDDIR := build
