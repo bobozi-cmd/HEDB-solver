@@ -53,9 +53,10 @@ link_con = lambda: psycopg2.connect(
 def query(con: "psycopg2.connection", sql: str):
     ret = None
     try:
-        with con.cursor() as cur:
-            cur.execute(sql)
-            ret = cur.fetchall()
+        with con:
+            with con.cursor() as cur:
+                cur.execute(sql)
+                ret = cur.fetchall()
     except Exception as e:
         logging.error(f"Sql encounter error: {sql}")
     finally:
@@ -82,16 +83,16 @@ class TraceGen:
     def __init__(
         self,
         link_con,
-        log_dir: str,
+        sql_dir: str,
         trace_dir: str,
     ) -> None:
         self.link_con = link_con
-        self.log_dir = pathlib.Path(log_dir)
+        self.sql_dir = pathlib.Path(sql_dir)
         self.trace_dir = pathlib.Path(trace_dir)
         self.tmp_path = pathlib.Path("/tmp/integrity_zone.log")
         # check path valid
-        if not self.log_dir.exists():
-            print(f"{self.log_dir} not exist")
+        if not self.sql_dir.exists():
+            print(f"{self.sql_dir} not exist")
             exit(-1)
         if not self.trace_dir.exists():
             self.trace_dir.mkdir()
@@ -104,13 +105,13 @@ class TraceGen:
             finishable_cmd(cmd)
 
     def generate_all(self):
-        for file in self.log_dir.iterdir():
+        for file in self.sql_dir.iterdir():
             if file.is_file() and file.name.endswith(".sql"):
                 name = file.name.split("/")[-1].split(".sql")[0]
                 self.get_trace(file, self.trace_dir.joinpath(f"{name}.log"))
 
-    def get_trace(self, log_file: "pathlib.Path", trace_file: "pathlib.Path"):
-        with open(log_file, "r") as fp:
+    def get_trace(self, sql_file: "pathlib.Path", trace_file: "pathlib.Path"):
+        with open(sql_file, "r") as fp:
             sql = " ".join(fp.readlines())
             ret = query(self.link_con(), sql=sql)
 

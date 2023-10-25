@@ -17,8 +17,8 @@ def handler(signum: "signal._SIGNUM", frame):
         exit(0)
 
 
-def gen_trace(log_path: str, trace_path: str):
-    tg = TraceGen(link_con=link_con, log_dir=log_path, trace_dir=trace_path)
+def gen_trace(sql_path: str, trace_path: str):
+    tg = TraceGen(link_con=link_con, sql_dir=sql_path, trace_dir=trace_path)
     tg.generate_all()
 
 
@@ -42,7 +42,7 @@ def main():
     subp = parser.add_subparsers(dest="cmd", required=True)
     trace = subp.add_parser("trace", help="Generate sql traces")
     trace.add_argument(
-        "-l", "--log", help="Path of log directory", type=str, required=True
+        "-q", "--sql", help="Path of sqls directory", type=str, required=True
     )
     trace.add_argument(
         "-t", "--trace", help="Path of trace directory", type=str, required=True
@@ -55,7 +55,7 @@ def main():
     signal.signal(signal.SIGINT, handler=handler)
 
     if args.cmd == "trace":
-        gen_trace(log_path=args.log, trace_path=args.trace)
+        gen_trace(sql_path=args.sql, trace_path=args.trace)
     elif args.cmd == "analysis":
         run(log_file=args.log)
 
