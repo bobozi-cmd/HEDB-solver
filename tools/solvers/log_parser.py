@@ -5,13 +5,12 @@ from op_log import OpLog
 from db_utils import create_z3_obj, oracle, DT
 
 
-class LogParser():
-
+class LogParser:
     def __init__(self, file: "pathlib.Path") -> None:
         self.file = file
-        self.variable_table = {}
-        self.r_variable_table = {}
-        self.op_logs = []
+        self.variable_table: dict[str, "z3.ArithRef"] = {}
+        self.r_variable_table: dict["z3.ArithRef", str] = {}
+        self.op_logs: list["OpLog"] = []
         self._idx = 0
 
     def get_all(self) -> list["OpLog"]:
@@ -23,7 +22,7 @@ class LogParser():
                     continue
                 self.op_logs.append(self.transform(line))
         return self.op_logs
-    
+
     def transform(self, line: str) -> "OpLog":
         """Transform line into a OpLog
         log format: data_type op var1 ... varn res
@@ -33,7 +32,7 @@ class LogParser():
                 s: string
             op: +,-,*,/,%,^,SUM,AVG,MAX,MIN,>,<,==,<=,>=,!=
             res: value, False, True
-        
+
         >>> lp = LogParser(None)
         >>> lp.transform('i + 3 19 22')
         i(+ x0 x1) -> x2
@@ -45,9 +44,9 @@ class LogParser():
         toks = line.split()
         data_type = toks[0]
         op = toks[1]
-        
+
         vars = []
-        for v in toks[2:-1] if toks[-1] in ['True', 'False'] else toks[2:]:
+        for v in toks[2:-1] if toks[-1] in ["True", "False"] else toks[2:]:
             if v not in self.variable_table:
                 tmp = create_z3_obj(name=f"x{self._idx}", type=data_type)
                 self._idx += 1
@@ -57,7 +56,14 @@ class LogParser():
                 tmp = self.variable_table[v]
             vars.append(tmp)
 
-        res = toks[-1] if toks[-1] in ['True', 'False'] else vars.pop(-1)
+        res = toks[-1] if toks[-1] in ["True", "False"] else vars.pop(-1)
         return OpLog(dtype=data_type, op=op, vars=tuple(vars), result=res)
 
-
+    def statistics(self) -> dict[str, int]:
+        op_frequency = {}
+        for log in self.op_logs:
+            if log.op in op_frequency:
+                op_frequency[log.op] += 1
+            else:
+                op_frequency[log.op] = 1
+        return op_frequency
