@@ -12,3 +12,4 @@ __pycache__
 *.eps
 .cache
 *.log
+*.pkl
