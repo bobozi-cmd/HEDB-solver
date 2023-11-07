@@ -86,7 +86,8 @@ class OpLog:
         return self.left_op.vars
 
     def search_and_replace(self, other_op: "OpLog"):
-        self.left_op.search_and_replace(other_op.result, other_op.left_op)
+        if type(other_op.result) is z3.ArithRef:
+            self.left_op.search_and_replace(other_op.result, other_op.left_op)
 
 
 if __name__ == "__main__":
