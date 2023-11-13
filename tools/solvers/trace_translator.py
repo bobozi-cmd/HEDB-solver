@@ -57,9 +57,9 @@ if __name__ == "__main__":
     sat_solver.add(sat_tt.formulas)
 
     st = time.time_ns()
-    sat_solver.check()
+    ret = sat_solver.check()
     et = time.time_ns()
-    print(f"sat: {(et - st)/1000/1000:.4f}")
+    print(f"{ret}: {(et - st)/1000/1000:.4f}")
     # print(sat_solver.model())
 
     unsat_tt = TraceTranslator(args.unsatfile)
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     unsat_solver.add(unsat_tt.formulas)
 
     st = time.time_ns()
-    unsat_solver.check()
+    ret = unsat_solver.check()
     et = time.time_ns()
-    print(f"unsat: {(et - st)/1000/1000:.4f}")
+    print(f"{ret}: {(et - st)/1000/1000:.4f}")
     

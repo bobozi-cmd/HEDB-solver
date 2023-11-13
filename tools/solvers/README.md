@@ -65,7 +65,15 @@ sudo chown ubuntu ./solvers/privacy_zone.log
 ## Use solver
 ```bash
 cd HEDB-solver/tools/solvers
-# Please check solver_xxxx.log
-python3 log_check.py -i integrity_zone.log -p privacy_zone.log
-# Note: Currently, log_check.py can only deal with integer data and [+, -, * /]
+# generate sql's trace
+python3 main.py trace -q ../../tests/tpch/secure-query/ -t ./trace
+# analysis Q5.log, and print ops distribution
+python3 main.py analysis -l ./trace/Q5.log
+
+# trace_translator.py is a demo to parser a *.tr to generator a set of formulas
+# There are 2 formal can be supported:
+#       unary formula : y9 == 23
+#       binary formula: ( y8 + x10 ) == y9
+# and // marks comments
+python3 ./trace_translator.py -s {sat_trace}.tr -u {unsat_trace}.tr 
 ```
