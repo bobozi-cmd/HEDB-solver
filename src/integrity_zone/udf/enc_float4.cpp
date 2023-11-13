@@ -359,40 +359,40 @@ static void convert_expr(char* expr, char* out_expr)
     memcpy(out_expr, out_queue, out_len + 1);
 }
 
-// Datum enc_float4_eval_expr(PG_FUNCTION_ARGS)
-// {
-//     Datum* args;
-//     bool* nulls;
-//     Oid* types;
-//     int i;
-//     EncFloat* arr[EXPR_MAX_SIZE];
-//     EncFloat* res = (EncFloat*)palloc0(sizeof(EncFloat));
-//     char *s, s_postfix[EXPR_STACK_MAX_SIZE];
-//     Str* str = (Str*)palloc0(sizeof(Str));
-//     memset(s_postfix, 0, (size_t)EXPR_STACK_MAX_SIZE);
+Datum enc_float4_eval_expr(PG_FUNCTION_ARGS)
+{
+    Datum* args;
+    bool* nulls;
+    Oid* types;
+    int i;
+    EncFloat* arr[EXPR_MAX_SIZE];
+    EncFloat* res = (EncFloat*)palloc0(sizeof(EncFloat));
+    char *s, s_postfix[EXPR_STACK_MAX_SIZE];
+    Str* str = (Str*)palloc0(sizeof(Str));
+    memset(s_postfix, 0, (size_t)EXPR_STACK_MAX_SIZE);
 
-//     int nargs = extract_variadic_args(fcinfo, 0, true, &args, &types, &nulls);
+    int nargs = extract_variadic_args(fcinfo, 0, true, &args, &types, &nulls);
 
-//     if (nargs < 0)
-//         PG_RETURN_NULL();
+    if (nargs < 0)
+        PG_RETURN_NULL();
 
-//     // ereport(INFO, (errmsg("nargs: %d expr: %s", nargs, s)));
-//     s = PG_GETARG_CSTRING(0);
-//     s = remove_space(s);
-//     convert_expr(s, s_postfix);
+    // ereport(INFO, (errmsg("nargs: %d expr: %s", nargs, s)));
+    s = PG_GETARG_CSTRING(0);
+    s = remove_space(s);
+    convert_expr(s, s_postfix);
 
-//     for (i = 1; i < nargs; i++) {
-//         arr[i - 1] = DatumGetEncFloat(args[i]);
-//     }
+    for (i = 1; i < nargs; i++) {
+        arr[i - 1] = DatumGetEncFloat(args[i]);
+    }
 
-//     str->len = strlen(s_postfix);
-//     memcpy(str->data, s_postfix, str->len);
+    str->len = strlen(s_postfix);
+    memcpy(str->data, s_postfix, str->len);
 
-//     int error = enc_float_eval_expr(nargs - 1, *str, arr, res);
-//     if (error) print_error("%s %d", __func__, error);
-//     pfree(str);
-//     PG_RETURN_POINTER(res);
-// }
+    int error = enc_float_eval_expr(nargs - 1, *str, arr, res);
+    if (error) print_error("%s %d", __func__, error);
+    pfree(str);
+    PG_RETURN_POINTER(res);
+}
 
 /*
  * return the less between the two.
