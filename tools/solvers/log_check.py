@@ -59,8 +59,10 @@ class OpLog():
 
 def transform(raw_line: str):
     global idx
-    # TODO: Add tag, no more var
-    # format: op var1 var2 result
+    # TODO: Change code to apply for new format
+    # format: op var1 var2 result (old)
+    # new format: [f/i/s] op var1 var2 ... res(val/True/False)
+    #             op: [+,-,*,/,%,^,SUM,AVG,MAX,MIN,>,<,==,<=,>=,!=]
     tokens = raw_line.strip().split()
     op = tokens[0]
     
@@ -90,16 +92,6 @@ def analyze(input_log: "OpLog"):
     solver = z3.Solver()
 
     def check_op(log: "OpLog"):
-        # 相同的1的密文是不同的，CTA
-        # z3本身有没有性能优化的方法：https://www.researchgate.net/post/How-to-speedup-the-performance-of-Z3-solver
-        # select * 来扫表，只保护原始数据，中间数据不保护，中间变量用明文（加速） ？==？中间变量用密文（string强约束）
-        # 先不支持string，我们需要拿到蚂蚁的真实SQL，来判断这个事情：string就算在我们的方法下，被逆向的概率也很大，
-        # 确定一个字符串被锁定的byte，需要人工介入（或者使用LLM来逆向猜测）
-        # New idea：使用LLM来逆向猜测一个string的全文，以此来帮忙检测数据泄露，阈值是什么？
-        # 假设：攻击者没有关于用户的所有先验知识，但是有互联网的公开知识
-        # 在一台手机上把LLM跑起来，这个就很容易普及
-        # 浮点数：加一个bound
-        # 日期：xxxx年xx月xx日，check合法性（月份1-12）
         nonlocal solver
         if log.op == "+":
             # z3.Sum()
