@@ -18,7 +18,7 @@ class OpLog:
 class OpLogFactory:
     """
     >>> from z3 import *
-    >>> a, b, c = Ints("a b c")
+    >>> a, b, c = Ints("A B C")
     >>> op1 = OpLogFactory.create_op_log('i', '+', [a, b, 10], 10)
     >>> op2 = OpLogFactory.create_op_log('i', '>', [b, c], 'True')
     >>> type(op1) is ArithOpLog
@@ -26,9 +26,13 @@ class OpLogFactory:
     >>> type(op2) is CmpOpLog
     True
     >>> op1
-    a + b + 10 == 10
+    A + B + 10 == 10
     >>> op2
-    b > c
+    B > C
+    >>> vars = [a, b, c]
+    >>> op3 = OpLogFactory.create_op_log('i', 'SUM', [vars[0], vars[2], b, 10], 15)
+    >>> op3
+    A + C + B + 10 == 15
     """
     @classmethod
     def create_op_log(
