@@ -1,7 +1,5 @@
 import z3
 
-from tools import HeLog
-
 # Note: Assume only has int and float value
 
 ARITH_OPS = ["+", "-", "*", "/", "%", "^", "SUM", "AVG"]
